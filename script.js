@@ -175,22 +175,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const exitFullscreenIcon = document.getElementById('exit-fullscreen-icon');
 
     fullscreenBtn.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.warn(`Error attempting to enable fullscreen: ${err.message}`);
-            });
+        const docEl = document.documentElement;
+        
+        const requestFullscreen = docEl.requestFullscreen || 
+                                  docEl.webkitRequestFullscreen || 
+                                  docEl.mozRequestFullScreen || 
+                                  docEl.msRequestFullscreen;
+
+        const exitFullscreen = document.exitFullscreen || 
+                               document.webkitExitFullscreen || 
+                               document.mozCancelFullScreen || 
+                               document.msExitFullscreen;
+                               
+        const isFullscreen = document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement;
+
+        if (!isFullscreen) {
+            if (requestFullscreen) {
+                requestFullscreen.call(docEl).catch(err => {
+                    console.warn(`Error attempting to enable fullscreen: ${err?.message}`);
+                });
+            }
         } else {
-            document.exitFullscreen();
+            if (exitFullscreen) {
+                exitFullscreen.call(document);
+            }
         }
     });
 
-    document.addEventListener('fullscreenchange', () => {
-        if (document.fullscreenElement) {
+    const handleFullscreenChange = () => {
+        const isFullscreen = document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement;
+                             
+        if (isFullscreen) {
             fullscreenIcon.style.display = 'none';
             exitFullscreenIcon.style.display = 'block';
         } else {
             fullscreenIcon.style.display = 'block';
             exitFullscreenIcon.style.display = 'none';
         }
-    });
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 });
