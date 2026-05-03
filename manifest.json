@@ -1,0 +1,20 @@
+{
+  "name": "Castle Builder",
+  "short_name": "Castle",
+  "display": "fullscreen",
+  "start_url": ".",
+  "background_color": "#E0F6FF",
+  "theme_color": "#87CEEB",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
