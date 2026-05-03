@@ -6,13 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragOffsetY = 0;
 
     // Prevent default touch behaviors (like pull-to-refresh) on the app
-    document.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+    document.addEventListener('touchmove', (e) => { 
+        // Allow native scroll for palette
+        if (e.target.closest('#palette')) {
+            return;
+        }
+        e.preventDefault(); 
+    }, { passive: false });
 
     // Handle initial pointer down on palette blocks to create clones
     document.querySelectorAll('.palette-block').forEach(block => {
         block.addEventListener('pointerdown', (e) => {
-            // Prevent text selection/default drag
-            e.preventDefault();
             
             // Create clone
             const clone = block.cloneNode(true);
@@ -40,12 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.addEventListener('pointerdown', (e) => {
         const block = e.target.closest('.block');
         if (block && !block.classList.contains('palette-block')) {
+            e.preventDefault();
             startDrag(block, e);
         }
     });
 
     function startDrag(block, e) {
-        e.preventDefault();
         activeBlock = block;
         activeBlock.classList.add('dragging');
         
