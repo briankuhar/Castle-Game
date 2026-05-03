@@ -5,15 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
-    // Prevent default touch behaviors (like pull-to-refresh) on the app
-    document.addEventListener('touchmove', (e) => { 
-        // Allow native scroll for palette
-        if (e.target.closest('#palette')) {
-            return;
-        }
-        e.preventDefault(); 
-    }, { passive: false });
-
     // Handle initial pointer down on palette blocks to create clones
     document.querySelectorAll('.palette-block').forEach(block => {
         block.addEventListener('pointerdown', (e) => {

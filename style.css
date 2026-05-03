@@ -16,6 +16,7 @@ body, html {
   font-family: sans-serif;
   user-select: none;
   -webkit-user-select: none;
+  overscroll-behavior: none;
 }
 
 #app {
@@ -86,6 +87,7 @@ body, html {
   width: calc(var(--grid-size) * 2);
   height: calc(var(--grid-size) * 2);
   flex-shrink: 0;
+  touch-action: pan-x;
 }
 
 .block {
@@ -218,6 +220,7 @@ body, html {
 
 .palette-block {
   position: relative; /* Override absolute in palette */
+  touch-action: pan-x;
 }
 
 /* Dragging state */
