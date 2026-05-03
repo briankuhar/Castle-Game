@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Castle Builder</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="app">
+        <div id="canvas">
+            <!-- Castle blocks will be dropped here -->
+        </div>
+        <div id="palette">
+            <div class="palette-item">
+                <div class="block square palette-block" data-type="square"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block rect-h palette-block" data-type="rect-h"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block rect-v palette-block" data-type="rect-v"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block arch palette-block" data-type="arch"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block triangle palette-block" data-type="triangle"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block window palette-block" data-type="window"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block door palette-block" data-type="door"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block support-left palette-block" data-type="support-left"></div>
+            </div>
+            <div class="palette-item">
+                <div class="block support-right palette-block" data-type="support-right"></div>
+            </div>
+            <!-- Trash area indicator could go here, or just dragging back to palette deletes -->
+        </div>
+    </div>
+</body>
+</html>

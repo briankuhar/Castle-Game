@@ -1,0 +1,232 @@
+:root {
+  --grid-size: 60px;
+  --stone-base: #8f949c;
+  --stone-dark: #6e737a;
+  --stone-light: #b0b4ba;
+  --roof-base: #a64a3a;
+  --roof-light: #c25946;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+  touch-action: none; /* Prevent scroll on touch */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #E0F6FF;
+}
+
+#canvas {
+  flex: 1;
+  position: relative;
+  background-color: #87CEEB; /* Sky fallback */
+  background-image:
+    /* Grid */
+    linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+    /* Hills (Foreground to Background) */
+    radial-gradient(ellipse 90% 100% at 20% 100%, #55a630 99.5%, transparent 100%),
+    radial-gradient(ellipse 90% 100% at 80% 100%, #2b9348 99.5%, transparent 100%),
+    radial-gradient(ellipse 100% 100% at 50% 100%, #80b918 99.5%, transparent 100%),
+    /* Sky Gradient */
+    linear-gradient(to bottom, #4ea8de 0%, #E0F6FF 100%);
+  background-size: 
+    var(--grid-size) var(--grid-size), 
+    var(--grid-size) var(--grid-size), 
+    100% 45%, 
+    100% 55%, 
+    100% 40%,
+    100% 100%;
+  background-position: 
+    0 0, 
+    0 0, 
+    center bottom, 
+    center bottom, 
+    center bottom,
+    0 0;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+}
+
+#palette {
+  height: calc(var(--grid-size) * 2 + 20px);
+  background-color: #e0e0e0;
+  border-top: 4px solid #ccc;
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+  align-items: center;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+  z-index: 100;
+  padding: 0 20px;
+  overflow-x: auto;
+}
+
+.palette-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(var(--grid-size) * 2);
+  height: calc(var(--grid-size) * 2);
+  flex-shrink: 0;
+}
+
+.block {
+  position: absolute;
+  cursor: grab;
+  box-sizing: border-box;
+  /* Stone styling */
+  background: linear-gradient(135deg, var(--stone-light) 0%, var(--stone-base) 40%, var(--stone-dark) 100%);
+  border: 1px solid rgba(0,0,0,0.2);
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.4),
+    inset -2px -2px 6px rgba(0,0,0,0.3),
+    3px 3px 6px rgba(0,0,0,0.3);
+  border-radius: 4px; /* Slight rounding for a softer feel */
+  /* Animations */
+  transition: left 0.15s ease-out, top 0.15s ease-out, transform 0.1s;
+}
+
+/* Base shape sizes */
+.square {
+  width: var(--grid-size);
+  height: var(--grid-size);
+}
+
+.rect-h {
+  width: calc(var(--grid-size) * 2);
+  height: var(--grid-size);
+}
+
+.rect-v {
+  width: var(--grid-size);
+  height: calc(var(--grid-size) * 2);
+}
+
+.arch {
+  width: var(--grid-size);
+  height: var(--grid-size);
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+}
+
+.triangle {
+  width: var(--grid-size);
+  height: var(--grid-size);
+  background: none;
+  border: none;
+  box-shadow: none;
+  /* Use filter for drop shadow on clip-path */
+  filter: drop-shadow(3px 3px 4px rgba(0,0,0,0.3));
+}
+
+.triangle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--roof-light) 0%, var(--roof-base) 100%);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border-radius: 4px;
+}
+
+.window {
+  width: var(--grid-size);
+  height: var(--grid-size);
+}
+
+.window::after {
+  content: "";
+  position: absolute;
+  top: 15px; left: 15px; right: 15px; bottom: 15px;
+  background: linear-gradient(to bottom, #2a363b, #1a2225);
+  border-radius: 20px 20px 0 0;
+  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.door {
+  width: var(--grid-size);
+  height: calc(var(--grid-size) * 2);
+}
+
+.door::after {
+  content: "";
+  position: absolute;
+  top: 15px; left: 10px; right: 10px; bottom: 0;
+  background: linear-gradient(to right, #6b4c3a 0%, #5c4033 50%, #6b4c3a 100%);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.6);
+  border: 1px solid rgba(0,0,0,0.8);
+  border-bottom: none;
+}
+
+.support-left {
+  width: var(--grid-size);
+  height: var(--grid-size);
+  background: none;
+  border: none;
+  box-shadow: none;
+  filter: drop-shadow(3px 3px 4px rgba(0,0,0,0.3));
+}
+
+.support-left::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, var(--stone-light) 0%, var(--stone-base) 40%, var(--stone-dark) 100%);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  border-radius: 4px;
+}
+
+.support-right {
+  width: var(--grid-size);
+  height: var(--grid-size);
+  background: none;
+  border: none;
+  box-shadow: none;
+  filter: drop-shadow(3px 3px 4px rgba(0,0,0,0.3));
+}
+
+.support-right::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, var(--stone-light) 0%, var(--stone-base) 40%, var(--stone-dark) 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  border-radius: 4px;
+}
+
+.palette-block {
+  position: relative; /* Override absolute in palette */
+}
+
+/* Dragging state */
+.block.dragging {
+  transition: none; /* Disable transition while dragging to keep it snapped to pointer */
+  z-index: 1000 !important;
+  transform: scale(1.05); /* Slight lift effect */
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.4),
+    inset -2px -2px 6px rgba(0,0,0,0.3),
+    8px 8px 12px rgba(0,0,0,0.4); /* Deeper shadow when lifted */
+  cursor: grabbing;
+}
+
+.block.triangle.dragging,
+.block.support-left.dragging,
+.block.support-right.dragging {
+  filter: drop-shadow(8px 8px 8px rgba(0,0,0,0.4));
+}
