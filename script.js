@@ -168,4 +168,29 @@ document.addEventListener('DOMContentLoaded', () => {
         
         activeBlock = null;
     }
+
+    // Fullscreen logic
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const fullscreenIcon = document.getElementById('fullscreen-icon');
+    const exitFullscreenIcon = document.getElementById('exit-fullscreen-icon');
+
+    fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            fullscreenIcon.style.display = 'none';
+            exitFullscreenIcon.style.display = 'block';
+        } else {
+            fullscreenIcon.style.display = 'block';
+            exitFullscreenIcon.style.display = 'none';
+        }
+    });
 });
