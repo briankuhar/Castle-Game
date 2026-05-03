@@ -224,4 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    // Clear Canvas logic
+    const clearBtn = document.getElementById('clear-btn');
+    clearBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear your castle?')) {
+            const canvasBlocks = canvas.querySelectorAll('.block');
+            canvasBlocks.forEach(block => block.remove());
+        }
+    });
 });
