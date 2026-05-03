@@ -14,7 +14,6 @@ body, html {
   height: 100%;
   overflow: hidden;
   font-family: sans-serif;
-  touch-action: none; /* Prevent scroll on touch */
   user-select: none;
   -webkit-user-select: none;
 }
@@ -30,6 +29,7 @@ body, html {
 #canvas {
   flex: 1;
   position: relative;
+  touch-action: none;
   background-color: #87CEEB; /* Sky fallback */
   background-image:
     /* Grid */
