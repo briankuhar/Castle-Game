@@ -5,30 +5,86 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
+    // Palette interaction state
+    let paletteInteractState = null; // 'pending', 'scrolling', 'dragging', null
+    let interactStartX = 0;
+    let interactStartY = 0;
+    let activePaletteBlock = null;
+    let paletteScrollStart = 0;
+
+    const palette = document.getElementById('palette');
+
     // Handle initial pointer down on palette blocks to create clones
     document.querySelectorAll('.palette-block').forEach(block => {
         block.addEventListener('pointerdown', (e) => {
+            if (!e.isPrimary) return;
             
-            // Create clone
-            const clone = block.cloneNode(true);
-            clone.classList.remove('palette-block');
+            paletteInteractState = 'pending';
+            interactStartX = e.clientX;
+            interactStartY = e.clientY;
+            activePaletteBlock = block;
+            paletteScrollStart = palette.scrollLeft;
             
-            // Get initial position relative to viewport
-            const rect = block.getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect();
-            
-            // Set initial position on canvas
-            let startX = rect.left - canvasRect.left;
-            let startY = rect.top - canvasRect.top;
-            
-            clone.style.left = `${startX}px`;
-            clone.style.top = `${startY}px`;
-            
-            canvas.appendChild(clone);
-            
-            // Start dragging
-            startDrag(clone, e);
+            block.setPointerCapture(e.pointerId);
+            e.preventDefault();
         });
+        
+        block.addEventListener('pointermove', (e) => {
+            if (!e.isPrimary || !activePaletteBlock || activePaletteBlock !== block) return;
+            
+            if (paletteInteractState === 'pending') {
+                const dx = e.clientX - interactStartX;
+                const dy = e.clientY - interactStartY;
+                
+                // If moving UP by at least 8 pixels, prioritize dragging out a block
+                if (dy < -8) {
+                    paletteInteractState = 'dragging';
+                    
+                    // Create clone
+                    const clone = activePaletteBlock.cloneNode(true);
+                    clone.classList.remove('palette-block');
+                    
+                    const rect = activePaletteBlock.getBoundingClientRect();
+                    const canvasRect = canvas.getBoundingClientRect();
+                    
+                    let startX = rect.left - canvasRect.left;
+                    let startY = rect.top - canvasRect.top;
+                    
+                    clone.style.left = `${startX}px`;
+                    clone.style.top = `${startY}px`;
+                    
+                    canvas.appendChild(clone);
+                    
+                    activePaletteBlock.releasePointerCapture(e.pointerId);
+                    
+                    startDrag(clone, interactStartX, interactStartY);
+                    onDrag(e); // Instantly catch up to current pointer
+                    
+                    paletteInteractState = null;
+                    activePaletteBlock = null;
+                } 
+                // If moving side-to-side by at least 15 pixels, treat as scroll
+                else if (Math.abs(dx) > 15) {
+                    paletteInteractState = 'scrolling';
+                }
+            } else if (paletteInteractState === 'scrolling') {
+                const dx = e.clientX - interactStartX;
+                palette.scrollLeft = paletteScrollStart - dx;
+            }
+        });
+        
+        const endInteraction = (e) => {
+            if (activePaletteBlock === block) {
+                try {
+                    block.releasePointerCapture(e.pointerId);
+                } catch(err) {}
+                paletteInteractState = null;
+                activePaletteBlock = null;
+            }
+        };
+        
+        block.addEventListener('pointerup', endInteraction);
+        block.addEventListener('pointercancel', endInteraction);
     });
 
     // Handle grabbing blocks already on the canvas
@@ -36,18 +92,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const block = e.target.closest('.block');
         if (block && !block.classList.contains('palette-block')) {
             e.preventDefault();
-            startDrag(block, e);
+            startDrag(block, e.clientX, e.clientY);
         }
     });
 
-    function startDrag(block, e) {
+    function startDrag(block, clientX, clientY) {
         activeBlock = block;
         activeBlock.classList.add('dragging');
         
         // Calculate offset between pointer and block top-left
         const rect = activeBlock.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
+        dragOffsetX = clientX - rect.left;
+        dragOffsetY = clientY - rect.top;
         
         // Bring to front
         const highestZIndex = Array.from(canvas.children).reduce((max, el) => {

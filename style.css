@@ -220,7 +220,7 @@ body, html {
 
 .palette-block {
   position: relative; /* Override absolute in palette */
-  touch-action: pan-x;
+  touch-action: none;
 }
 
 /* Dragging state */
